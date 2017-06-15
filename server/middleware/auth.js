@@ -1,5 +1,6 @@
 const models = require('../models');
 const Promise = require('bluebird');
+const cookieParse = require('./cookieParser');
 
 module.exports.createSession = (req, res, next) => {
 };

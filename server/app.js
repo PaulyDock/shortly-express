@@ -92,12 +92,7 @@ app.post('/signup', (req, res, next) => {
   .then(() => {
     res.redirect('/');
   })
-  // .error(()) => {   //any error resolves to this if included
-  //   console.log('error');    //removed for simplicity
-  //   res.redirect('/signup');
-  // })
   .catch(() => {
-    // console.log('account exists (probably…or some other error…)');
     res.redirect('/signup');
   });
 
@@ -105,24 +100,36 @@ app.post('/signup', (req, res, next) => {
 
 app.post('/login', (req, res, next) => {
   models.Users.get({username: req.body.username})
-    .then(results => {
-      if (results) {
-        if (models.Users.compare(req.body.password, results.password, results.salt)) {
-          res.redirect('/');
-        } else {
-          res.redirect('/login');
-        }
+  .then(results => {
+    if (results) {
+      if (models.Users.compare(req.body.password, results.password, results.salt)) {
+        res.redirect('/');
       } else {
         res.redirect('/login');
       }
+    } else {
+      res.redirect('/login');
+    }
 
-    })
-    .catch(error => {
-      console.log(error);
-      res.status(200).send();
-    });
-
+  })
+  .catch(error => {
+    console.log(error);
+    res.status(200).send();
+  });
 });
+
+
+//generate a hash from username and salt
+  //session create()
+//insert into sessions table (id/hash/salt/userID)
+//write a cookie to the header (shortlyid=##########)
+  //sendresponse
+
+
+//Express references
+//res.cookie
+//res.clearCookie
+
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
