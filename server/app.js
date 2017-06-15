@@ -88,17 +88,45 @@ const db = mysql.createConnection({
 });
     
 app.post('/signup', (req, res, next) => {
-  models.Users.create(req.body)
-  .then(links => {
-    console.log('links', links);
-    res.status(200).send(links);
+  return models.Users.create(req.body)
+  .then(() => {
+    res.redirect('/');
   })
-  .error(error => {
-    res.status(500).send(error);
-  })
-  .catch(link => {
-    res.status(200).send(link);
+  // .error(()) => {   //any error resolves to this if included
+  //   console.log('error');    //removed for simplicity
+  //   res.redirect('/signup');
+  // })
+  .catch(() => {
+    // console.log('account exists (probably…or some other error…)');
+    res.redirect('/signup');
   });
+
+});
+
+app.post('/login', (req, res, next) => {
+  models.Users.get({username: req.body.username})
+    .then(results => {
+      if (results) {      // this partially works
+        console.log(results);
+        console.log('req.body', req.body);
+        console.log('results', results);
+        if (models.Users.compare(req.body.password, results.password, results.salt)) {
+          console.log('true');
+          res.redirect('/');
+        } else {
+          res.redirect('/login');
+        }
+      } else {
+        console.log('no results, fam');
+        res.redirect('/login');
+      }
+
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(200).send();
+    });
+  // res.status(200).send();
 
 });
 
