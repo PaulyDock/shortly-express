@@ -5,6 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const mysql = require('mysql');
 
 const app = express();
 
@@ -14,11 +15,12 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-
+console.log(express.static(path.join(__dirname, '../public'))); //what asset?
 
 
 app.get('/', 
 (req, res) => {
+  //console.log('res.render', res.render);
   res.render('index');
 });
 
@@ -27,6 +29,7 @@ app.get('/create',
   res.render('index');
 });
 
+//update Links model to conditionally display
 app.get('/links', 
 (req, res, next) => {
   models.Links.getAll()
@@ -78,7 +81,26 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 
+const db = mysql.createConnection({
+  user: 'student',
+  password: 'student',
+  database: 'shortly'
+});
+    
+app.post('/signup', (req, res, next) => {
+  models.Users.create(req.body)
+  .then(links => {
+    console.log('links', links);
+    res.status(200).send(links);
+  })
+  .error(error => {
+    res.status(500).send(error);
+  })
+  .catch(link => {
+    res.status(200).send(link);
+  });
 
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
