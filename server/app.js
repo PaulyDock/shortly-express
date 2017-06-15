@@ -106,18 +106,13 @@ app.post('/signup', (req, res, next) => {
 app.post('/login', (req, res, next) => {
   models.Users.get({username: req.body.username})
     .then(results => {
-      if (results) {      // this partially works
-        console.log(results);
-        console.log('req.body', req.body);
-        console.log('results', results);
+      if (results) {
         if (models.Users.compare(req.body.password, results.password, results.salt)) {
-          console.log('true');
           res.redirect('/');
         } else {
           res.redirect('/login');
         }
       } else {
-        console.log('no results, fam');
         res.redirect('/login');
       }
 
@@ -126,7 +121,6 @@ app.post('/login', (req, res, next) => {
       console.log(error);
       res.status(200).send();
     });
-  // res.status(200).send();
 
 });
 
